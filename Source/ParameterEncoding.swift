@@ -152,7 +152,7 @@ public struct URLEncoding: ParameterEncoding {
     /// - parameter value: The value of the query component.
     ///
     /// - returns: The percent-escaped, URL encoded query string components.
-    public func queryComponents(fromKey key: String, value: Any) -> [(String, String)] {
+    public func queryComponents(fromKey key: String, value: Any) -> [(String, String)] { //递归 将字典参数 转义为字符串
         var components: [(String, String)] = []
 
         if let dictionary = value as? [String: Any] {
@@ -192,7 +192,7 @@ public struct URLEncoding: ParameterEncoding {
     /// - parameter string: The string to be percent-escaped.
     ///
     /// - returns: The percent-escaped string.
-    public func escape(_ string: String) -> String {
+    public func escape(_ string: String) -> String { // !< URL编码（转义） --pyy
         let generalDelimitersToEncode = ":#[]@" // does not include "?" or "/" due to RFC 3986 - Section 3.4
         let subDelimitersToEncode = "!$&'()*+,;="
 
@@ -234,7 +234,7 @@ public struct URLEncoding: ParameterEncoding {
         return escaped
     }
 
-    private func query(_ parameters: [String: Any]) -> String {
+    private func query(_ parameters: [String: Any]) -> String { // !< 将字典转为string的url参数 --pyy
         var components: [(String, String)] = []
 
         for key in parameters.keys.sorted(by: <) {
