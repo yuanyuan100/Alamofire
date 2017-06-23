@@ -72,10 +72,10 @@ public typealias HTTPHeaders = [String: String]
 /// managing its underlying `URLSessionTask`.
 open class Request {
 
-    // MARK: Helper Types
+    // MARK: Helper Types // !< 辅助类 --pyy
 
     /// A closure executed when monitoring upload or download progress of a request.
-    public typealias ProgressHandler = (Progress) -> Void
+    public typealias ProgressHandler = (Progress) -> Void  // !< 监视请求上载或下载进度时执行的闭包 --pyy
 
     enum RequestTask {
         case data(TaskConvertible?, URLSessionTask?)
@@ -84,46 +84,46 @@ open class Request {
         case stream(TaskConvertible?, URLSessionTask?)
     }
 
-    // MARK: Properties
+    // MARK: Properties // !< 属性 --pyy
 
     /// The delegate for the underlying task.
-    open internal(set) var delegate: TaskDelegate {
-        get {
-            taskDelegateLock.lock() ; defer { taskDelegateLock.unlock() }
+    open internal(set) var delegate: TaskDelegate { // !< 底层任务的代理， 供外部访问 --pyy
+        get { // !< get的访问级别为open --pyy
+            taskDelegateLock.lock() ; defer { taskDelegateLock.unlock() } // 想要能访问该代码，必须先获得锁
             return taskDelegate
         }
-        set {
+        set { // !< set的访问级别 为默认级别 --pyy
             taskDelegateLock.lock() ; defer { taskDelegateLock.unlock() }
             taskDelegate = newValue
         }
     }
 
     /// The underlying task.
-    open var task: URLSessionTask? { return delegate.task }
+    open var task: URLSessionTask? { return delegate.task } // !< 底层任务 --pyy
 
     /// The session belonging to the underlying task.
-    open let session: URLSession
+    open let session: URLSession  // !< 属于底层任务的会话 --pyy
 
     /// The request sent or to be sent to the server.
     open var request: URLRequest? { return task?.originalRequest }
 
     /// The response received from the server, if any.
-    open var response: HTTPURLResponse? { return task?.response as? HTTPURLResponse }
+    open var response: HTTPURLResponse? { return task?.response as? HTTPURLResponse } // !< 从服务器接收的响应，如果有的话 --pyy
 
     /// The number of times the request has been retried.
-    open internal(set) var retryCount: UInt = 0
+    open internal(set) var retryCount: UInt = 0 // !< 重试请求的次数，默认不重试 --pyy
 
-    let originalTask: TaskConvertible?
+    let originalTask: TaskConvertible?  // !< 原始任务??? --pyy
 
-    var startTime: CFAbsoluteTime?
-    var endTime: CFAbsoluteTime?
+    var startTime: CFAbsoluteTime?  // !< 请求开始的时间？ --pyy
+    var endTime: CFAbsoluteTime?    // !< 请求结束的时间？ --pyy
 
-    var validations: [() -> Void] = []
+    var validations: [() -> Void] = []    // !< 验证 闭包数组， 干什么用，暂时不知道 --pyy
 
-    private var taskDelegate: TaskDelegate
-    private var taskDelegateLock = NSLock()
+    private var taskDelegate: TaskDelegate    // !< TaskDelegate类的对象， 供内部访问 --pyy
+    private var taskDelegateLock = NSLock()   // !< 初始化一个锁，每一个request都有一个锁 --pyy
 
-    // MARK: Lifecycle
+    // MARK: Lifecycle    // !< 生命周期 --pyy
 
     init(session: URLSession, requestTask: RequestTask, error: Error? = nil) {
         self.session = session
@@ -144,12 +144,12 @@ open class Request {
         }
 
         delegate.error = error
-        delegate.queue.addOperation { self.endTime = CFAbsoluteTimeGetCurrent() }
+        delegate.queue.addOperation { self.endTime = CFAbsoluteTimeGetCurrent() }    // !< 增加一个操作，串行队列任务完成后调用 --pyy
     }
 
-    // MARK: Authentication
+    // MARK: Authentication    // !< 认证 --pyy
 
-    /// Associates an HTTP Basic credential with the request.
+    /// Associates an HTTP Basic credential with the request.  // !< 将HTTP基本凭证与请求关联起来 --pyy
     ///
     /// - parameter user:        The user.
     /// - parameter password:    The password.
@@ -167,7 +167,7 @@ open class Request {
         return authenticate(usingCredential: credential)
     }
 
-    /// Associates a specified credential with the request.
+    /// Associates a specified credential with the request.    // !< 将指定凭据与请求关联 --pyy
     ///
     /// - parameter credential: The credential.
     ///
@@ -183,7 +183,7 @@ open class Request {
     /// - parameter user:     The user.
     /// - parameter password: The password.
     ///
-    /// - returns: A tuple with Authorization header and credential value if encoding succeeds, `nil` otherwise.
+    /// - returns: A tuple with Authorization header and credential value if encoding succeeds, `nil` otherwise.    // !< 一个带有授权头和证书值的元组，如果编码成功，则为“否” --pyy
     open static func authorizationHeader(user: String, password: String) -> (key: String, value: String)? {
         guard let data = "\(user):\(password)".data(using: .utf8) else { return nil }
 

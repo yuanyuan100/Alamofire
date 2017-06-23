@@ -44,7 +44,7 @@ open class TaskDelegate: NSObject {
     }
 
     var initialResponseTime: CFAbsoluteTime?
-    var credential: URLCredential?
+    var credential: URLCredential?    // !< 会话凭证 --pyy
     var metrics: AnyObject? // URLSessionTaskMetrics
 
     // MARK: Lifecycle
